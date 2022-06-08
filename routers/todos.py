@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
-from models.Todo import engine, TODO
+from database import session
+from models.Todo import TODO
 from schema.Todo import Todo
-from sqlalchemy.orm import Session
 
 
 router = APIRouter(
@@ -10,10 +10,11 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+# Geting the session
+
 
 @router.get("/")
 def read_todos():
-    session = Session(bind=engine, expire_on_commit=False)
     todos = session.query(TODO).all()
     session.close()
     return todos
@@ -21,8 +22,6 @@ def read_todos():
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_todo(todo: Todo):
-    # Init Session
-    session = Session(bind=engine, expire_on_commit=False)
     # making Todo Objects
     tododb = TODO(task=todo.task)
     # Add Todos to the Database
@@ -40,7 +39,6 @@ def create_todo(todo: Todo):
 
 @router.get("/{id}")
 def read_todo(id: int):
-    session = Session(bind=engine, expire_on_commit=False)
     todo = session.query(TODO).get(id)
     if not todo:
         raise HTTPException(
@@ -50,7 +48,6 @@ def read_todo(id: int):
 
 @router.put("/{id}")
 def update_todo(id: int, task: str):
-    session = Session(bind=engine, expire_on_commit=False)
     todo = session.query(TODO).get(id)
     if todo:
         todo.task = task
@@ -66,7 +63,6 @@ def update_todo(id: int, task: str):
 
 @router.delete("/{id}")
 def delete_todo(id: int):
-    session = Session(bind=engine, expire_on_commit=False)
     todo = session.query(TODO).get(id)
     if todo:
         session.delete(todo)

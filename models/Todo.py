@@ -1,14 +1,10 @@
-from sqlalchemy import create_engine, Column, String, Integer
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.ext.declarative import declarative_base
-
-# Create a sqlite Database
-engine = create_engine("sqlite:///todo.db")
-
-# Create a DeclaraiveMeta Instances
-Base = declarative_base()
-
+from database import Base, engine
 
 # TODO Tables!
+
+
 class TODO(Base):
     __tablename__ = 'todos'
     id = Column(Integer, primary_key=True)
